@@ -51,6 +51,8 @@
         showListbox: function() {
             this.listbox.show();
             this.el.setAttribute('aria-expanded', true);
+
+
         },
 
         hideListbox: function() {
@@ -61,6 +63,7 @@
 
         handleFocus: function(e) {
             this.showListbox();
+            //tried here 
         },
 
         handleBlur: function(e) {
@@ -77,11 +80,13 @@
             case VK_DOWN:
                 if (!this.listbox.hidden) {
                     this.listbox.nextActiveListItem();
+                     this.setActiveDescendant(this.listbox.activeItem);
                 }
                 break;
             case VK_UP:
                 if (!this.listbox.hidden) {
                     this.listbox.previousActiveListItem();
+                     this.setActiveDescendant(this.listbox.activeItem);
                 }
                 break;
             case VK_ENTER:
@@ -90,6 +95,7 @@
                     break;
                 this.setSelected(active);
                 this.hideListbox();
+                   this.setActiveDescendant(active);
                 break;
             case VK_ESC:
                 this.hideListbox();
@@ -101,6 +107,7 @@
 
         setSelected: function(el) {
             this.value = el.textContent;
+
         },
 
         /**
@@ -170,6 +177,19 @@
                 this.hide();
             } else {
                 // FIXME: ChromeVox reports the wrong list size and position
+               /* for (var vitem of this.items) {
+                        vitem.setAttribute('aria-setsize', foundItems);
+                }
+                var f=1;
+                for (var fitem of this.visibleItems){
+                    fitem.setAttribute('aria-posinset',f);
+                    f++;
+                }*/
+                for(var i=0; i<this.visibleItems.length; i++) {
+                    var item = this.visibleItems[i];
+                    item.setAttribute('aria-posinset', i+1);
+                    item.setAttribute('aria-setsize', this.visibleItems.length);
+                }
             }
         },
 
@@ -237,6 +257,10 @@
             newActive.classList.add('active');
 
             // FIXME: need to ensure focus stays on textbox, but report active list option
+            //input.setAttribute('aria-activedescendant', newActive.id);
+            //listbox.setAttribute('aria-activedescendant', newActive.id);
+            // video fix
+            this.textbox.setActiveDescendant(newActive);
         }
     };
 

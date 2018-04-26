@@ -1,6 +1,7 @@
 page('/', function() {
   page.redirect('/what-is-vegemite');
 });
+var isFirstPage= true;
 
 page('/:slug', function(context) {
   // This will match any value after the first / in the url. For example, if
@@ -16,11 +17,22 @@ page('/:slug', function(context) {
   // Add is-active class to new menu item and section using the URL slug
   var newMenuItem = document.querySelector('#menu [data-page='+slug+']');
   var newPage = document.querySelector('main [data-page='+slug+']');
+
+  
   newMenuItem.classList.add('is-active');
   newPage.classList.add('is-active');
-
+  if(isFirstPage) {
+    isFirstPage = false;
+    return;
+  }
+  var header = newPage.querySelector("h2");
+  console.log(header);
+  header.tabIndex = -1;
+  header.focus();
 });
 
 page({
   hashbang: true
 });
+
+//const aheader = document.querySelector()

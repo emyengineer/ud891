@@ -25,7 +25,6 @@
     this.el.addEventListener('keydown', this.handleKeyDown.bind(this));
   }
 
-  let checkedBtnFound = false;
   RadioGroup.prototype.handleKeyDown = function(e) {
     switch(e.keyCode) {
 
@@ -36,15 +35,15 @@
 
         // This seems like a good place to do some stuff :)
         if(this.focusedIdx > 0) {
-
-          this.focusedIdx --;
-
+           this.focusedIdx --;
         } else {
-
-          this.focusedIdx = this.buttons.length-1;
+          this.focusedIdx = 0;
+          this.focusedButton = this.buttons[this.focusedIdx];
         }
-        this.changeFocus(this.focusedIdx); // <-- Hmm, interesting...
+         this.changeFocus(this.focusedIdx); // <-- Hmm, interesting...
+
         break;
+
       }
 
       case VK_DOWN:
@@ -53,45 +52,58 @@
         e.preventDefault();
 
         // This seems like a good place to do some stuff :)
-           if(this.focusedIdx <  this.buttons.length-1) {
+        if(this.focusedIdx < this.buttons.length ) {
 
+            console.log('Focused Index before increment '+ this.focusedIdx);
             this.focusedIdx++;
+            this.focusedButton = this.buttons[this.focusedIdx];
+            console.log('Focused Index after increment '+ this.focusedIdx);
 
         } else {
+          this.focusedIdx = 0  ;
+          this.focusedButton = this.buttons[this.focusedIdx];
+        }
+         this.changeFocus(this.focusedIdx); // <-- Hmm, interesting...
 
-          this.focusedIdx = 0 ;
-
-        }  
-        this.changeFocus(this.focusedIdx); // <-- Hmm, interesting...
         break;
       }
 
       case TAB: {
         e.preventDefault();
-        for (var i = 0; i < this.buttons.length - 1 ; i++) {
-          if(this.buttons[i].getAttribute('checked') != null) {
-            this.focusedButton = this.buttons[i];
-            this.focusedButton.focus();
-            checkedBtnFound = true;
+        if(this.focusedIdx < this.buttons.length ) {
+                console.log('Focused Index', this.focusedIdx);
+                this.focusedIdx++;
+               // Set the old button to tabindex -1
+                this.focusedButton.tabIndex = -1;
+                // Set the new button to tabindex 0 and focus it
+                this.focusedButton = this.buttons[this.focusedIdx];
+                this.focusedButton.tabIndex = 0;
+                this.focusedButton.focus();
           }
+          else {
+                this.focusedIdx = 0  ;
+                this.focusedButton = this.buttons[this.focusedIdx];
         }
-        if(!checkedBtnFound) {
-          this.buttons[0].focus();
+        break;
+
+      }
+      case SPACE: {
+        e.preventDefault();
+        if(this.focusedButton.getAttribute('checked') === null) {
+          var checkedBtn = document.querySelector('[tabIndex="0"]');
+          checkedBtn.removeAttribute('checked');
+          this.focusedButton.setAttribute('checked', 'checked');
+
+        } else {
+
+          this.focusedButton.removeAttribute('checked');
         }
         break;
       }
-
-      case SPACE: {
-        e.preventDefault();
-        if(this.focusedButton.getAttribute('checked') === null)
-        {
-           this.changeFocus(this.focusedIdx);
-        }
-       break; 
-      }      
+    
     }
 
-    
+   
   };
 
   RadioGroup.prototype.changeFocus = function(idx) {
